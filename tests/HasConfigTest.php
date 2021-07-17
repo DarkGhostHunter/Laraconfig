@@ -475,6 +475,10 @@ class HasConfigTest extends BaseTestCase
                 'name' => 'foo',
             ])]));
 
+        $cache->shouldReceive('get')
+            ->with('laraconfig|'.DummyModel::class.'|1:time')
+            ->andReturn(now()->subMinute());
+
         $cache->shouldReceive('set')
             ->with('laraconfig|'.DummyModel::class.'|1', \Mockery::type(Collection::class), 60 * 60 * 3)
             ->andReturns();
@@ -487,6 +491,40 @@ class HasConfigTest extends BaseTestCase
                 return true;
             })
             ->andReturns();
+
+        $user = DummyModel::find(1);
+
+        $user->settings->regenerate();
+
+        static::assertFalse($user->settings->regeneratesOnExit);
+    }
+
+    public function test_should_not_regenerate_cache_if_is_not_fresher(): void
+    {
+        config()->set('laraconfig.cache.enable', true);
+
+        $cache = $this->mock(Repository::class);
+
+        $this->mock(Factory::class)
+            ->shouldReceive('store')
+            ->with(null)
+            ->andReturn($cache);
+
+        $cache->shouldReceive('forget')
+            ->with('laraconfig|'.DummyModel::class.'|1');
+
+        $cache->shouldReceive('get')
+            ->with('laraconfig|'.DummyModel::class.'|1')
+            ->andReturn(new SettingsCollection([(new Setting())->forceFill([
+                'name' => 'foo',
+            ])]));
+
+        $cache->shouldReceive('get')
+            ->with('laraconfig|'.DummyModel::class.'|1:time')
+            ->andReturn(now()->addMinute());
+
+        $cache->shouldNotReceive('set');
+        $cache->shouldNotReceive('setMultiple');
 
         $user = DummyModel::find(1);
 

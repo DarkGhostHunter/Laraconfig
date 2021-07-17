@@ -73,14 +73,13 @@ class SettingsCache implements Serializable
      */
     public function shouldRegenerate(): bool
     {
-        // If wasn't invalidated before, or there is no cache for the last
-        // invalidation timestamp, then we should invalidate the data. If
-        // there is a timestamp we will check if we are not in the past.
-        if (! $this->invalidatedAt) {
+        // If the time doesn't exist in the cache then we can safely store.
+        if (!$time = $this->cache->get("$this->key:time")) {
             return true;
         }
 
-        return $this->invalidatedAt->isAfter($this->cache->get("$this->key:time"));
+        // Return if the is an invalidation (data changed) and is fresher.
+        return (bool) $this->invalidatedAt?->isAfter($time);
     }
 
     /**
