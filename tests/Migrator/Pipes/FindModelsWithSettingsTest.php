@@ -9,12 +9,14 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Tests\BaseTestCase;
 
+
 class FindModelsWithSettingsTest extends BaseTestCase
 {
     protected Filesystem $filesystem;
 
     protected function setUp(): void
     {
+
         parent::setUp();
 
         $this->filesystem = new Filesystem();
@@ -106,6 +108,10 @@ CONTENT
 
     public function test_reads_models_in_root(): void
     {
+        if (defined('GITHUB_ACTIONS')) {
+            self::markTestSkipped('Model find will not work on Github actions.');
+        }
+
         $pipe = new FindModelsWithSettings($this->app, $this->filesystem);
         $data = new Data();
 
@@ -118,6 +124,10 @@ CONTENT
 
     public function test_reads_models_in_model_dir(): void
     {
+        if (defined('GITHUB_ACTIONS')) {
+            self::markTestSkipped('Model find will not work on Github actions.');
+        }
+
         $this->filesystem->put($this->app->path('Models/Foo.php'), <<<'CONTENT'
 <?php
 
