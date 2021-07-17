@@ -12,11 +12,11 @@
   ],
   "require": {
     "php": ">=8.0",
-    "illuminate/database": "^8.0",
-    "illuminate/support": "^8.0",
-    "illuminate/collections": "^8.0",
-    "illuminate/config": "^8.0",
-    "illuminate/cache": "^8.0"
+    "illuminate/database": "^8.43",
+    "illuminate/support": "^8.43",
+    "illuminate/collections": "^8.43",
+    "illuminate/config": "^8.43",
+    "illuminate/cache": "^8.43"
   },
   "require-dev": {
     "mockery/mockery": "^1.4.2",
