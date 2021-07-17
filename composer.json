@@ -19,7 +19,7 @@
     "illuminate/cache": "^8.43"
   },
   "require-dev": {
-    "mockery/mockery": "^1.4.2",
+    "mockery/mockery": "^1.4.3",
     "orchestra/testbench": "^6.19",
     "phpunit/phpunit": "^9.5.4"
   },

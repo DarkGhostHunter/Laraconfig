@@ -108,7 +108,7 @@ CONTENT
 
     public function test_reads_models_in_root(): void
     {
-        if (defined('GITHUB_ACTIONS')) {
+        if (env('GITHUB_ACTIONS')) {
             self::markTestSkipped('Model find will not work on Github actions.');
         }
 
@@ -124,7 +124,7 @@ CONTENT
 
     public function test_reads_models_in_model_dir(): void
     {
-        if (defined('GITHUB_ACTIONS')) {
+        if (env('GITHUB_ACTIONS')) {
             self::markTestSkipped('Model find will not work on Github actions.');
         }
 
