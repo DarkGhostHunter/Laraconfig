@@ -151,7 +151,7 @@ class FilterBySettingTest extends BaseTestCase
 
         static::assertCount(0, $users);
 
-        $users = $user->newQuery()->whereConfig('quz', 'quz-value')->dump()->first();
+        $users = $user->newQuery()->whereConfig('quz', 'quz-value')->first();
 
         static::assertNotNull($users);
 
