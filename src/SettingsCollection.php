@@ -176,14 +176,14 @@ class SettingsCollection extends Collection
     /**
      * Sets a value into a setting if it exists and it's enabled.
      *
-     * @param  string  $name
+     * @param  string|array  $name
      * @param  mixed  $value
      *
      * @return void
      */
-    public function setIfEnabled(string $name, mixed $value): void
+    public function setIfEnabled(string|array $name, mixed $value = null): void
     {
-        $this->get($name)->setIfEnabled($value);
+        $this->set($name, $value, false);
     }
 
     /**
@@ -288,7 +288,7 @@ class SettingsCollection extends Collection
      */
     public function __set(string $name, mixed $value): void
     {
-        $this->get($name)?->set($value);
+        $this->set($name, $value);
     }
 
     /**

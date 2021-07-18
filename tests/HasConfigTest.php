@@ -180,13 +180,26 @@ class HasConfigTest extends BaseTestCase
         $user = DummyModel::find(1);
 
         $user->settings->disable('foo');
-        $user->settings->set('foo', 'quz', false);
 
+        $user->settings->set('foo', 'quz', false);
         static::assertEquals('bar', $user->settings->value('foo'));
 
         $user->settings->setIfEnabled('foo', 'quz');
-
         static::assertEquals('bar', $user->settings->value('foo'));
+
+        $user->settings->setIfEnabled(['foo' => 'quz']);
+        static::assertEquals('bar', $user->settings->value('foo'));
+
+        $user->settings->enable('foo');
+
+        $user->settings->set('foo', 'quz', false);
+        static::assertEquals('quz', $user->settings->value('foo'));
+
+        $user->settings->setIfEnabled('foo', 'bar');
+        static::assertEquals('bar', $user->settings->value('foo'));
+
+        $user->settings->setIfEnabled(['foo' => 'quz']);
+        static::assertEquals('quz', $user->settings->value('foo'));
     }
 
     public function test_model_gets_config(): void
