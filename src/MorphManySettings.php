@@ -4,13 +4,11 @@ namespace DarkGhostHunter\Laraconfig;
 
 use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
 use Illuminate\Contracts\Cache\Factory;
-use Illuminate\Contracts\Config\Repository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Builder
@@ -34,11 +32,44 @@ class MorphManySettings extends MorphMany
      */
     protected ?SettingsCache $cache = null;
 
-    public function __construct(Builder $query, Model $parent, $type, $id, $localKey)
+    /**
+     * MorphManySettings constructor.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Model  $parent
+     * @param  string  $type
+     * @param  string  $id
+     * @param  string  $localKey
+     */
+    public function __construct(Builder $query, Model $parent, string $type, string $id, string $localKey)
     {
         $this->windUp($parent);
 
         parent::__construct($query, $parent, $type, $id, $localKey);
+    }
+
+    /**
+     * Prepares the relation instance to be handled.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $parent
+     *
+     * @return void
+     */
+    public function windUp(Model $parent): void
+    {
+        $config = app('config');
+
+        // We'll enable the cache for the settings only if is enabled in the
+        // application config. This object will handle the cache easily and
+        // will receive the instruction from the collection to regenerate.
+        if ($config->get('laraconfig.cache.enable', false)) {
+            $this->cache = SettingsCache::make($config, app(Factory::class), $parent);
+        }
+
+        // And filter the bags if the model has stated them.
+        $this->bags = Arr::wrap(
+            method_exists($parent, 'filterBags') ? $parent->filterBags() : $config->get('laraconfig.default', 'users')
+        );
     }
 
     /**
@@ -54,30 +85,6 @@ class MorphManySettings extends MorphMany
         $this->getQuery()->whereHas('metadata', function (Builder $query): void {
             $query->whereIn('bag', $this->bags);
         });
-    }
-
-    /**
-     * Prepares the relation instance to be handled.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model  $parent
-     *
-     * @return void
-     */
-    public function windUp(Model $parent): void
-    {
-        /** @var \Illuminate\Contracts\Config\Repository $config */
-        $config = app(Repository::class);
-
-        // We'll enable the cache for the settings only if is enabled in the
-        // application config. This object will handle the cache easily and
-        // will receive the instruction from the collection to regenerate.
-        if ($config->get('laraconfig.cache.enable', false)) {
-            $this->cache = SettingsCache::make($config, app(Factory::class), $parent);
-        }
-
-        $this->bags = Arr::wrap(
-            method_exists($parent, 'filterBags') ? $parent->filterBags() : $config->get('laraconfig.default', 'users')
-        );
     }
 
 
