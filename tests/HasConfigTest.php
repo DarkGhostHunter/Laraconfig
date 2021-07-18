@@ -6,6 +6,7 @@ use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
 use DarkGhostHunter\Laraconfig\Eloquent\Setting;
 use DarkGhostHunter\Laraconfig\HasConfig;
 use DarkGhostHunter\Laraconfig\SettingsCollection;
+use Error;
 use Exception;
 use Illuminate\Contracts\Cache\Factory;
 use Illuminate\Contracts\Cache\Repository;
@@ -821,8 +822,8 @@ class HasConfigTest extends BaseTestCase
 
     public function test_sets_doesnt_sets_property_dynamically_into_collection(): void
     {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Property [invalid] does not exist on this collection instance');
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage("The setting [invalid] doesn't exist.");
 
         $user = DummyModel::find(1);
 

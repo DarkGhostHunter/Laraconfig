@@ -2,18 +2,20 @@
 
 namespace DarkGhostHunter\Laraconfig;
 
+use DarkGhostHunter\Laraconfig\Eloquent\Setting;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Enumerable;
 use Illuminate\Support\Traits\EnumeratesValues;
+use RuntimeException;
 
 /**
  * Class SettingsCollection
  *
  * @package DarkGhostHunter\Laraconfig
  *
- * @method \DarkGhostHunter\Laraconfig\Eloquent\Setting get(string $name, mixed $default = null)
+ * @method Setting get(string $name, mixed $default = null)
  */
 class SettingsCollection extends Collection
 {
@@ -97,7 +99,11 @@ class SettingsCollection extends Collection
         }
 
         foreach ($name as $key => $setting) {
-            $this->get($key)?->set($setting, $force);
+            if (! $instance = $this->get($key)) {
+                throw new RuntimeException("The setting [$key] doesn't exist.");
+            }
+
+            $instance->set($setting, $force);
         }
     }
 
