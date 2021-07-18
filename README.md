@@ -480,7 +480,7 @@ LARACONFIG_STORE=redis
 
 #### Managing the cache
 
-You can forcefully regenerate the cache of a single user using `regenerate()`. This basically retrieves all the settings from the database (for the bags used) and saves them into the cache.
+You can forcefully regenerate the cache of a single user using `regenerate()`. This basically saves the settings present  and saves them into the cache.
 
 ```php
 $user->settings->regenerate();
@@ -492,7 +492,7 @@ You can also invalidate the cached settings using `invalidate()`, which just del
 $user->settings->invalidate();
 ```
 
-Finally, you can have a little peace of mind by setting `regeneratesOnExit` to `true`, which will regenerate the cache when the settings are garbage collected by the PHP process
+Finally, you can have a little peace of mind by setting `regeneratesOnExit` to `true`, which will regenerate the cache when the settings are garbage collected by the PHP process.
 
 ```php
 $user->settings->regeneratesOnExit = true;
