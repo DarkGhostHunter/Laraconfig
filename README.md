@@ -533,7 +533,7 @@ public function store(Request $request, User $user)
 
 ## Testing
 
-Eventually you will land into the problem of creating settings and metadata for each user created. You can easily create Metadata directly into the database.
+Eventually you will land into the problem of creating settings and metadata for each user created. You can easily create Metadata directly into the database _before_ creating a user, unless you have disabled [initialization](#initializing).
 
 ```php
 public function test_user_has_settings(): void
@@ -546,6 +546,10 @@ public function test_user_has_settings(): void
         'group'   => 'default',
     ]);
     
+    $user = User::create([
+        // ...
+    ]);
+        
     // ...
 }
 ```
