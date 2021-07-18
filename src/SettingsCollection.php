@@ -97,7 +97,7 @@ class SettingsCollection extends Collection
         }
 
         foreach ($name as $key => $setting) {
-            $this->get($key)->set($setting, $force);
+            $this->get($key)?->set($setting, $force);
         }
     }
 
