@@ -6,12 +6,15 @@ use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
 use DarkGhostHunter\Laraconfig\Eloquent\Setting;
 use DarkGhostHunter\Laraconfig\HasConfig;
 use DarkGhostHunter\Laraconfig\SettingsCollection;
+use Exception;
 use Illuminate\Contracts\Cache\Factory;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\HigherOrderCollectionProxy;
+use Mockery;
 use RuntimeException;
 use Tests\Dummies\DummyModel;
 
@@ -480,7 +483,7 @@ class HasConfigTest extends BaseTestCase
             ->andReturn(now()->subMinute());
 
         $cache->shouldReceive('set')
-            ->with('laraconfig|'.DummyModel::class.'|1', \Mockery::type(Collection::class), 60 * 60 * 3)
+            ->with('laraconfig|'.DummyModel::class.'|1', Mockery::type(Collection::class), 60 * 60 * 3)
             ->andReturns();
 
         $cache->shouldReceive('setMultiple')
@@ -784,5 +787,58 @@ class HasConfigTest extends BaseTestCase
         $user_alpha->settings->regenerate();
 
         static::assertEquals('qux', cache()->get('laraconfig|'.DummyModel::class.'|1')->get('foo')->value);
+    }
+
+    public function test_checks_settings_has_key(): void
+    {
+        $user = DummyModel::find(1);
+
+        static::assertTrue(isset($user->settings->foo));
+        static::assertFalse(isset($user->settings->bar));
+    }
+
+    public function test_sets_value_dynamically(): void
+    {
+        $user = DummyModel::find(1);
+
+        $user->settings->foo = 'quz';
+
+        $this->assertDatabaseHas('user_settings', ['id' => 1, 'value' => 'quz']);
+    }
+
+    public function test_sets_doesnt_sets_property_dynamically_into_collection(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Property [invalid] does not exist on this collection instance');
+
+        $user = DummyModel::find(1);
+
+        $user->settings->invalid = 'quz';
+
+        $user->settings->invalid;
+    }
+
+    public function test_gets_value_dynamically(): void
+    {
+        $user = DummyModel::find(1);
+
+        static::assertEquals('bar', $user->settings->foo);
+    }
+
+    public function test_exception_when_dynamic_get_doesnt_exists(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Property [invalid] does not exist on this collection instance');
+
+        $user = DummyModel::find(1);
+
+        $user->settings->invalid;
+    }
+
+    public function test_get_allows_pass_to_higher_order_proxy(): void
+    {
+        $user = DummyModel::find(1);
+
+        static::assertInstanceOf(HigherOrderCollectionProxy::class, $user->settings->map);
     }
 }

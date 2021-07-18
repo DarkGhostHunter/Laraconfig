@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Enumerable;
+use Illuminate\Support\Traits\EnumeratesValues;
 
 /**
  * Class SettingsCollection
@@ -16,6 +17,9 @@ use Illuminate\Support\Enumerable;
  */
 class SettingsCollection extends Collection
 {
+    use EnumeratesValues {
+        __get as __dynamicGet;
+    }
     /**
      * The cache helper instance.
      *
@@ -274,5 +278,45 @@ class SettingsCollection extends Collection
         if ($this->regeneratesOnExit) {
             $this->cache?->setSettings($this)->regenerate();
         }
+    }
+
+    /**
+     * Dynamically sets a value.
+     *
+     * @param  string  $name
+     * @param  mixed $value
+     */
+    public function __set(string $name, mixed $value): void
+    {
+        $this->get($name)?->set($value);
+    }
+
+    /**
+     * Check if a given property exists.
+     *
+     * @param  string  $name
+     *
+     * @return bool
+     */
+    public function __isset(string $name): bool
+    {
+        return $this->has($name);
+    }
+
+    /**
+     * Dynamically access collection proxies.
+     *
+     * @param  string  $key
+     * @return mixed
+     *
+     * @throws \Exception
+     */
+    public function __get($key): mixed
+    {
+        if ($setting = $this->get($key)) {
+            return $setting->getAttribute('value');
+        }
+
+        return $this->__dynamicget($key);
     }
 }
