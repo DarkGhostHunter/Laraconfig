@@ -480,7 +480,7 @@ LARACONFIG_STORE=redis
 
 #### Managing the cache
 
-You can forcefully regenerate the cache of a single user using `regenerate()`. This basically retrieves all the settings from the database (for the bags used) and saves them into the cache.
+You can forcefully regenerate the cache of a single user using `regenerate()`. This basically saves the settings present  and saves them into the cache.
 
 ```php
 $user->settings->regenerate();
@@ -492,7 +492,7 @@ You can also invalidate the cached settings using `invalidate()`, which just del
 $user->settings->invalidate();
 ```
 
-Finally, you can have a little peace of mind by setting `regeneratesOnExit` to `true`, which will regenerate the cache when the settings are garbage collected by the PHP process
+Finally, you can have a little peace of mind by setting `regeneratesOnExit` to `true`, which will regenerate the cache when the settings are garbage collected by the PHP process.
 
 ```php
 $user->settings->regeneratesOnExit = true;
@@ -502,7 +502,7 @@ $user->settings->regeneratesOnExit = true;
 
 #### Regenerating the Cache on migration
 
-If the [Cache is activated](#cache), the migration will not invalidate the setting cache of all users after it completes.
+If the [Cache is activated](#cache), the migration will invalidate the setting cache for each user after it completes.
 
 Depending on the Cache system, forgetting each cache key can be detrimental. Instead, you can use the `--flush-cache` command to flush the cache store used by Laraconfig, instead of deleting each key one by one.
 
@@ -512,7 +512,7 @@ Depending on the Cache system, forgetting each cache key can be detrimental. Ins
 
 ## Validation
 
-Settings values are casted, but not validated. You should validate in your app every value that you plan to store in a setting.
+Settings values are _casted_, but not validated. You should validate in your app every value that you plan to store in a setting.
 
 ```php
 use App\Models\User;
