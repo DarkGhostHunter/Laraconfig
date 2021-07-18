@@ -1,6 +1,6 @@
 ![Xavier von Erlach - Unsplash #ooR1jY2yFr4](https://images.unsplash.com/photo-1570221622224-3bb8f08f166c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&h=400&q=80)
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/darkghosthunter/laraconfig.svg?style=flat-square)](https://packagist.org/packages/darkghosthunter/laraconfig) [![License](https://poser.pugx.org/darkghosthunter/laraconfig/license)](https://packagist.org/packages/darkghosthunter/laraconfig) ![](https://img.shields.io/packagist/php-v/darkghosthunter/laraconfig.svg) ![](https://github.com/DarkGhostHunter/Laraconfig/workflows/PHP%20Composer/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/DarkGhostHunter/Laraconfig/badge.svg?branch=master)](https://coveralls.io/github/DarkGhostHunter/Laraconfig?branch=master) [![Laravel Octane Compatible](https://img.shields.io/badge/Laravel%20Octane-Compatible-success?style=flat&logo=laravel)](https://github.com/laravel/octane)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/darkghosthunter/laraconfig.svg)](https://packagist.org/packages/darkghosthunter/laraconfig) [![License](https://poser.pugx.org/darkghosthunter/laraconfig/license)](https://packagist.org/packages/darkghosthunter/laraconfig) ![](https://img.shields.io/packagist/php-v/darkghosthunter/laraconfig.svg) ![](https://github.com/DarkGhostHunter/Laraconfig/workflows/PHP%20Composer/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/DarkGhostHunter/Laraconfig/badge.svg?branch=master)](https://coveralls.io/github/DarkGhostHunter/Laraconfig?branch=master) [![Laravel Octane Compatible](https://img.shields.io/badge/Laravel%20Octane-Compatible-success?style=flat&logo=laravel)](https://github.com/laravel/octane)
 
 # Laraconfig
 
@@ -313,7 +313,19 @@ if ($user->config()->isInitialized()) {
 
 ### Retrieving settings
 
-You can use `get()` with the name of the setting to get, which saves you a few lines. If the setting doesn't exist, it will return `null`.
+You can easily get a value of a setting using the name, which makes everything into a single beautiful _oneliner_.
+
+```php
+return "Your favorite color is {$user->settings->color}";
+```
+
+Since this only supports alphanumeric and underscore characters, you can use `value()`.
+
+```php
+return "Your favorite color is {$user->settings->value('color')}";
+```
+
+You can also get the underlying Setting model using `get()`. If the setting doesn't exist, it will return `null`.
 
 ```php
 $setting = $user->settings->get('theme');
@@ -349,10 +361,16 @@ $user->settings->groups(); // or ->groupBy('group')
 
 ### Setting a value
 
-Setting a value can be easily done using `set()` with the name of the setting and the value.
+Setting a value can be easily done by issuing the name of the setting and the value.
 
 ```php
-$user->settings->set('color', 'red');
+$user->settings->color = 'red';
+```
+
+Since this only supports settings with names made of alphanumeric and underscores, you can also set a value using the `set()` method by issuing the name of the setting.
+
+```php
+$user->settings->set('color-default', 'red');
 ```
 
 Or, you can go the purist mode directly in the model itself.
@@ -364,7 +382,7 @@ $setting->value = 'red';
 $setting->save();
 ```
 
-You can also set multiple settings using an array when using `set()`.
+You can also set multiple settings using an array when using `set()` in one go, which is useful when dealing with the [array returned by a validation](https://laravel.com/docs/validation#quick-writing-the-validation-logic).
 
 ```php
 $user->settings->set([
@@ -507,7 +525,7 @@ public function store(Request $request, User $user)
         'color' => 'required|string|in:red,green,blue'
     ]);
     
-    $user->settings->set($settings);
+    $user->settings->setIfEnabled($settings);
     
     // ...
 }
@@ -515,7 +533,7 @@ public function store(Request $request, User $user)
 
 ## Testing
 
-Eventually you will land into the problem of creating settings and metadata for each user created. You can easily create Metadata directly into the database.
+Eventually you will land into the problem of creating settings and metadata for each user created. You can easily create Metadata directly into the database _before_ creating a user, unless you have disabled [initialization](#initializing).
 
 ```php
 public function test_user_has_settings(): void
@@ -528,6 +546,10 @@ public function test_user_has_settings(): void
         'group'   => 'default',
     ]);
     
+    $user = User::create([
+        // ...
+    ]);
+        
     // ...
 }
 ```

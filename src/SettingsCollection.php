@@ -2,20 +2,26 @@
 
 namespace DarkGhostHunter\Laraconfig;
 
+use DarkGhostHunter\Laraconfig\Eloquent\Setting;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Enumerable;
+use Illuminate\Support\Traits\EnumeratesValues;
+use RuntimeException;
 
 /**
  * Class SettingsCollection
  *
  * @package DarkGhostHunter\Laraconfig
  *
- * @method \DarkGhostHunter\Laraconfig\Eloquent\Setting get(string $name, mixed $default = null)
+ * @method Setting get(string $name, mixed $default = null)
  */
 class SettingsCollection extends Collection
 {
+    use EnumeratesValues {
+        __get as __dynamicGet;
+    }
     /**
      * The cache helper instance.
      *
@@ -93,7 +99,11 @@ class SettingsCollection extends Collection
         }
 
         foreach ($name as $key => $setting) {
-            $this->get($key)->set($setting, $force);
+            if (! $instance = $this->get($key)) {
+                throw new RuntimeException("The setting [$key] doesn't exist.");
+            }
+
+            $instance->set($setting, $force);
         }
     }
 
@@ -172,14 +182,14 @@ class SettingsCollection extends Collection
     /**
      * Sets a value into a setting if it exists and it's enabled.
      *
-     * @param  string  $name
+     * @param  string|array  $name
      * @param  mixed  $value
      *
      * @return void
      */
-    public function setIfEnabled(string $name, mixed $value): void
+    public function setIfEnabled(string|array $name, mixed $value = null): void
     {
-        $this->get($name)->setIfEnabled($value);
+        $this->set($name, $value, false);
     }
 
     /**
@@ -274,5 +284,45 @@ class SettingsCollection extends Collection
         if ($this->regeneratesOnExit) {
             $this->cache?->setSettings($this)->regenerate();
         }
+    }
+
+    /**
+     * Dynamically sets a value.
+     *
+     * @param  string  $name
+     * @param  mixed $value
+     */
+    public function __set(string $name, mixed $value): void
+    {
+        $this->set($name, $value);
+    }
+
+    /**
+     * Check if a given property exists.
+     *
+     * @param  string  $name
+     *
+     * @return bool
+     */
+    public function __isset(string $name): bool
+    {
+        return $this->has($name);
+    }
+
+    /**
+     * Dynamically access collection proxies.
+     *
+     * @param  string  $key
+     * @return mixed
+     *
+     * @throws \Exception
+     */
+    public function __get($key): mixed
+    {
+        if ($setting = $this->get($key)) {
+            return $setting->getAttribute('value');
+        }
+
+        return $this->__dynamicget($key);
     }
 }
