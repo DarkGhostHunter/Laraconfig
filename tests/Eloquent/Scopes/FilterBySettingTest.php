@@ -101,8 +101,7 @@ class FilterBySettingTest extends BaseTestCase
 
         static::assertCount(1, $users);
 
-        $users = DummyModel::whereConfig('quz', 'quz-value')
-            ->first();
+        $users = DummyModel::whereConfig('quz', 'quz-value')->first();
 
         static::assertNull($users);
 
