@@ -12,8 +12,11 @@ use Illuminate\Contracts\Cache\Factory;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\HigherOrderCollectionProxy;
 use Mockery;
 use RuntimeException;
@@ -854,5 +857,46 @@ class HasConfigTest extends BaseTestCase
         $user = DummyModel::find(1);
 
         static::assertInstanceOf(HigherOrderCollectionProxy::class, $user->settings->map);
+    }
+
+    public function test_deletes_settings_when_model_deletes_itself(): void
+    {
+        DummyModel::find(1)->delete();
+
+        $this->assertDatabaseMissing('user_settings', ['id' => 1]);
+    }
+
+    public function test_deletes_settings_when_model_force_deletes_itself(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->softDeletes();
+        });
+
+        $user = new class extends Model {
+            use SoftDeletes;
+            use HasConfig;
+            protected $table = 'users';
+            protected $attributes = [
+                'name' => 'john',
+                'email' => 'email@email.com',
+                'password' => '123456'
+            ];
+        };
+
+        $user->save();
+
+        $this->assertDatabaseHas('user_settings', ['id' => 2]);
+
+        $user->delete();
+
+        $this->assertDatabaseHas('user_settings', ['id' => 2]);
+
+        $user->restore();
+
+        $this->assertDatabaseHas('user_settings', ['id' => 2]);
+
+        $user->forceDelete();
+
+        $this->assertDatabaseMissing('user_settings', ['id' => 2]);
     }
 }

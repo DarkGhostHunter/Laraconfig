@@ -5,6 +5,8 @@ namespace DarkGhostHunter\Laraconfig;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 use function method_exists;
 
 /**
@@ -46,6 +48,16 @@ trait HasConfig
                 // If there is no method, or there is and returns true, we will initialize.
                 if (!method_exists($model, 'shouldInitializeConfig') || $model->shouldInitializeConfig()) {
                     $model->settings()->initialize();
+                }
+            }
+        );
+
+        static::deleting(
+            static function (Model $model): void {
+                // Delete the settings if isn't using soft-deletes, or is using it and
+                // is force-deleting itself.
+                if (!method_exists($model, 'isForceDeleting') || $model->isForceDeleting()) {
+                    $model->settings()->delete();
                 }
             }
         );
