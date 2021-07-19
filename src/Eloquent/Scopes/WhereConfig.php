@@ -16,7 +16,7 @@ class WhereConfig implements Scope
      *
      * @return void
      */
-    public function apply(Builder $builder, Model $model)
+    public function apply(Builder $builder, Model $model): void
     {
         //
     }
@@ -28,7 +28,7 @@ class WhereConfig implements Scope
      *
      * @return void
      */
-    public function extend(Builder $builder)
+    public function extend(Builder $builder): void
     {
         $builder->macro('whereConfig', [static::class, 'whereConfig']);
     }
@@ -53,16 +53,15 @@ class WhereConfig implements Scope
         }
 
         return $builder->whereHas('settings', static function (Builder $builder) use ($name, $value): void {
-            if (!in_array(AddMetadata::class, $builder->removedScopes(), true)) {
-                $builder->withoutGlobalScope(AddMetadata::class);
-            }
-
-            $builder->where(static function (Builder $builder) use ($name, $value): void {
-                $builder
-                    ->where('value', $value)
-                    ->whereHas('metadata', static function (Builder $builder) use ($name): void {
-                        $builder->where('name', $name);
-                    });
+            $builder
+                ->withoutGlobalScope(AddMetadata::class)
+                ->where(
+                    static function (Builder $builder) use ($name, $value): void {
+                        $builder
+                            ->where('value', $value)
+                            ->whereHas('metadata', static function (Builder $builder) use ($name): void {
+                                $builder->where('name', $name);
+                            });
             });
         });
     }

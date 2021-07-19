@@ -49,5 +49,14 @@ trait HasConfig
                 }
             }
         );
+
+        static::deleting(
+            static function (Model $model): void {
+                // Bye settings on delete, or force-delete.
+                if (!method_exists($model, 'isForceDeleting') || $model->isForceDeleting()) {
+                    $model->settings()->withoutGlobalScopes()->delete();
+                }
+            }
+        );
     }
 }
