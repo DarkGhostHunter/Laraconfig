@@ -5,8 +5,6 @@ namespace DarkGhostHunter\Laraconfig;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
-
 use function method_exists;
 
 /**
