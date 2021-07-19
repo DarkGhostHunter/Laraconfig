@@ -930,4 +930,35 @@ class HasConfigTest extends BaseTestCase
 
         static::assertCount(2, $settings);
     }
+
+    public function test_allows_to_disable_bag_filter(): void
+    {
+       Metadata::forceCreate([
+            'name'    => 'bar',
+            'type'    => 'string',
+            'default' => 'quz',
+            'bag'     => 'test-users',
+            'group'   => 'default',
+        ]);
+
+        $user = new class extends Model {
+            use SoftDeletes;
+            use HasConfig;
+            protected $table = 'users';
+            protected $attributes = [
+                'name' => 'john',
+                'email' => 'email@email.com',
+                'password' => '123456'
+            ];
+            public function filterBags() {
+                return [];
+            }
+        };
+
+        $user->save();
+
+        $settings = $user->settings()->get();
+
+        static::assertCount(2, $settings);
+    }
 }

@@ -131,21 +131,7 @@ Setting::name('notify_email')->boolean()->default(true)->bag('notifications');
 Setting::name('notify_sms')->boolean()->default(false)->bag('notifications');
 ```
 
-Later, in your model, you can filter the bags you want to work with using `filterBags()`:
-
-```php
-/**
- * Returns the bags this model uses for settings.
- *
- * @return array|string
- */
-public function filterBags(): array|string
-{
-    return ['style', 'notifications'];
-}
-```
-
-> All settings are created for all models. Bags only apply a filter to them at query time to virtually "exclude" them from results. **This filter cannot be disabled**.
+Later, in your model, you can filter the bags you want to work with using [`filterBags()`](#setting-bags) in your model.
 
 ## Migrating settings
 
@@ -460,6 +446,34 @@ public function getSettingsBags(): array|string
 ```
 
 The above will apply a filter to the query when retrieving settings from the database. This makes easy to swap bags when a user has a different role or property, or programmatically.
+
+> **All** settings are created for all models with `HasConfig` trait, regardless of the bags used by the model. 
+
+#### Disabling the bag filter scope
+
+Laraconfig applies a query filter to exclude the settings not in the model bag. While this eases the development, sometimes you will want to work with the full set of settings available.
+
+There are two ways to disable the bag filter. The first one is relatively easy: simply use the `withoutGlobalScope()` at query time, which will allow to query all the settings available to the user.
+
+```php
+use DarkGhostHunter\Laraconfig\Eloquent\Scopes\FilterBags;
+
+$allSettings = $user->settings()->withoutGlobalScope(FilterBags::class)->get();
+```
+
+If you want a more _permanent_ solution, just simply return an empty array or `null` when using the `filterBags()` method in you model, which will disable the scope completely.
+
+```php
+/**
+ * Returns the bags this model uses for settings.
+ *
+ * @return array|string
+ */
+public function filterBags(): array|string|null
+{
+    return null;
+}
+```
 
 ## Cache
 

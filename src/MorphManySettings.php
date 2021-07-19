@@ -85,7 +85,9 @@ class MorphManySettings extends MorphMany
         // We will add the global scope only when checking for existence.
         // This should appear on SELECT instead of other queries.
         return parent::getRelationExistenceQuery($query, $parentQuery, $columns)
-            ->withGlobalScope(Eloquent\Scopes\FilterBags::class, new Eloquent\Scopes\FilterBags($this->bags));
+            ->when($this->bags, static function (Builder $builder, $value): void {
+                $builder->withGlobalScope(Eloquent\Scopes\FilterBags::class, new Eloquent\Scopes\FilterBags($value));
+            });
     }
 
     /**
