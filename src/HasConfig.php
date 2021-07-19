@@ -52,10 +52,9 @@ trait HasConfig
 
         static::deleting(
             static function (Model $model): void {
-                // Delete the settings if isn't using soft-deletes, or is using it and
-                // is force-deleting itself.
+                // Bye settings on delete, or force-delete.
                 if (!method_exists($model, 'isForceDeleting') || $model->isForceDeleting()) {
-                    $model->settings()->delete();
+                    $model->settings()->withoutGlobalScopes()->delete();
                 }
             }
         );

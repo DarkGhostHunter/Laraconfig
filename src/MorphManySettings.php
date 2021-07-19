@@ -73,20 +73,22 @@ class MorphManySettings extends MorphMany
     }
 
     /**
-     * Set the base constraints on the relation query.
+     * Get the relationship query.
      *
-     * @return void
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Builder  $parentQuery
+     * @param  array|mixed  $columns
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function addConstraints(): void
+    public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*']): Builder
     {
-        parent::addConstraints();
-
-        // Filter the bags of the model for this relationship.
-        $this->getQuery()->whereHas('metadata', function (Builder $query): void {
-            $query->whereIn('bag', $this->bags);
-        });
+        // We will add the global scope only when checking for existence.
+        // This should appear on SELECT instead of other queries.
+        return parent::getRelationExistenceQuery($query, $parentQuery, $columns)
+            ->whereHas('metadata', function (Builder $query): void {
+                $query->withGlobalScope(Eloquent\Scopes\FilterBags::class, new Eloquent\Scopes\FilterBags($this->bags));
+            });
     }
-
 
     /**
      * Generates the key for the model to save into the cache.
