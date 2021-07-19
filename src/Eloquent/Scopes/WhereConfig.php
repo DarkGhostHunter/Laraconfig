@@ -53,14 +53,17 @@ class WhereConfig implements Scope
         }
 
         return $builder->whereHas('settings', static function (Builder $builder) use ($name, $value): void {
-            $builder->withoutGlobalScopes()->where(
-                static function (Builder $builder) use ($name, $value): void {
-                    $builder
-                        ->where('value', $value)
-                        ->whereHas('metadata', static function (Builder $builder) use ($name): void {
-                            $builder->where('name', $name);
-                        });
-             });
+            if (!in_array(AddMetadata::class, $builder->removedScopes(), true)) {
+                $builder->withoutGlobalScope(AddMetadata::class);
+            }
+
+            $builder->where(static function (Builder $builder) use ($name, $value): void {
+                $builder
+                    ->where('value', $value)
+                    ->whereHas('metadata', static function (Builder $builder) use ($name): void {
+                        $builder->where('name', $name);
+                    });
+            });
         });
     }
 }

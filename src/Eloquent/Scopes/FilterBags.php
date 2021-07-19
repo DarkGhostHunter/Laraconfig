@@ -27,6 +27,8 @@ class FilterBags implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        $builder->whereIn('bag', $this->bags);
+        $builder->whereHas('metadata', function (Builder $query): void {
+            $query->whereIn('bag', $this->bags);
+        });
     }
 }

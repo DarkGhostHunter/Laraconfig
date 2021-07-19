@@ -3,6 +3,7 @@
 namespace Tests;
 
 use DarkGhostHunter\Laraconfig\Eloquent\Metadata;
+use DarkGhostHunter\Laraconfig\Eloquent\Scopes\FilterBags;
 use DarkGhostHunter\Laraconfig\Eloquent\Setting;
 use DarkGhostHunter\Laraconfig\HasConfig;
 use DarkGhostHunter\Laraconfig\SettingsCollection;
@@ -906,5 +907,27 @@ class HasConfigTest extends BaseTestCase
         $user->forceDelete();
 
         $this->assertDatabaseMissing('user_settings', ['settable_id' => 2]);
+    }
+
+    public function test_allows_for_removing_bags_filter_on_query(): void
+    {
+        Setting::forceCreate([
+            'value' => 'quz',
+            'settable_id' => 1,
+            'settable_type' => (new DummyModel())->getMorphClass(),
+            'metadata_id' =>  Metadata::forceCreate([
+                'name'    => 'bar',
+                'type'    => 'string',
+                'default' => 'quz',
+                'bag'     => 'test-users',
+                'group'   => 'default',
+            ])->getKey()
+        ]);
+
+        $user = DummyModel::find(1);
+
+        $settings = $user->settings()->withoutGlobalScope(FilterBags::class)->get();
+
+        static::assertCount(2, $settings);
     }
 }
