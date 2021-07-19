@@ -46,7 +46,7 @@ jobs:
       - name: Run static analysis
         run: |
           composer require --no-progress --dev nunomaduro/larastan
-          vendir/bin/phpstan analyze -c vendor/nunomaduro/larastan/extension.neon -l 4 src/
+          vendor/bin/phpstan analyze -c vendor/nunomaduro/larastan/extension.neon -l 4 src/
 
       - name: Run Tests
         run: composer run-script test
