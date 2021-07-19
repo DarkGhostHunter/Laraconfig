@@ -863,11 +863,19 @@ class HasConfigTest extends BaseTestCase
     {
         DummyModel::find(1)->delete();
 
-        $this->assertDatabaseMissing('user_settings', ['id' => 1]);
+        $this->assertDatabaseMissing('user_settings', ['settable_id' => 1]);
     }
 
     public function test_deletes_settings_when_model_force_deletes_itself(): void
     {
+        Metadata::forceCreate([
+            'name'    => 'bar',
+            'type'    => 'string',
+            'default' => 'quz',
+            'bag'     => 'test-users',
+            'group'   => 'default',
+        ]);
+
         Schema::table('users', function (Blueprint $table) {
             $table->softDeletes();
         });
@@ -885,18 +893,18 @@ class HasConfigTest extends BaseTestCase
 
         $user->save();
 
-        $this->assertDatabaseHas('user_settings', ['id' => 2]);
+        $this->assertDatabaseHas('user_settings', ['settable_id' => 2]);
 
         $user->delete();
 
-        $this->assertDatabaseHas('user_settings', ['id' => 2]);
+        $this->assertDatabaseHas('user_settings', ['settable_id' => 2]);
 
         $user->restore();
 
-        $this->assertDatabaseHas('user_settings', ['id' => 2]);
+        $this->assertDatabaseHas('user_settings', ['settable_id' => 2]);
 
         $user->forceDelete();
 
-        $this->assertDatabaseMissing('user_settings', ['id' => 2]);
+        $this->assertDatabaseMissing('user_settings', ['settable_id' => 2]);
     }
 }
