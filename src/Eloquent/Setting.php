@@ -18,8 +18,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  *
  * @property-read string $name // Added by the "add-metadata" global scope.
  * @property-read string $type // Added by the "add-metadata" global scope.
- * @property-read \Illuminate\Support\Carbon|\Illuminate\Support\Collection|array|string|int|float|bool|null $default
- *     // Added by the "add-metadata" global scope.
+ * @property-read \Illuminate\Support\Carbon|\Illuminate\Support\Collection|array|string|int|float|bool|null $default // Added by the "add-metadata" global scope.
  * @property-read string $group // Added by the "add-metadata" global scope.
  * @property-read string $bag // Added by the "add-metadata" global scope.
  *
@@ -39,12 +38,11 @@ class Setting extends Model
      *
      * @var array
      */
-    protected $casts
-        = [
-            'value'      => Casts\DynamicCasting::class,
-            'default'    => Casts\DynamicCasting::class,
-            'is_enabled' => 'boolean',
-        ];
+    protected $casts = [
+        'value'      => Casts\DynamicCasting::class,
+        'default'    => Casts\DynamicCasting::class,
+        'is_enabled' => 'boolean',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -66,15 +64,6 @@ class Setting extends Model
      * @var array|null
      */
     public ?array $parentBags = null;
-
-    /**
-     * The settings repository.
-     *
-     * @internal
-     *
-     * @var \DarkGhostHunter\Laraconfig\Laraconfig|null
-     */
-    public ?Laraconfig $laraconfig = null;
 
     /**
      * Settings cache repository.
@@ -113,7 +102,7 @@ class Setting extends Model
     /**
      * The parent metadata.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Services\Settings\Eloquent\Metadata
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function metadata(): BelongsTo
     {
@@ -123,7 +112,7 @@ class Setting extends Model
     /**
      * The user this settings belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo|\Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
     public function user(): MorphTo
     {

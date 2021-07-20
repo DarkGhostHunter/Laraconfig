@@ -53,7 +53,7 @@ class Metadata extends Model
     /**
      * The settings this metadata has.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\Services\Settings\Eloquent\Setting
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\DarkGhostHunter\Laraconfig\Eloquent\Setting
      */
     public function settings(): HasMany
     {
