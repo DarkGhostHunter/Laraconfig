@@ -2,7 +2,6 @@
 
 namespace DarkGhostHunter\Laraconfig;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 use function method_exists;
@@ -10,7 +9,8 @@ use function method_exists;
 /**
  * @property-read \DarkGhostHunter\Laraconfig\SettingsCollection<\DarkGhostHunter\Laraconfig\Eloquent\Setting>|\DarkGhostHunter\Laraconfig\Eloquent\Setting[] $settings
  *
- * @method Builder|static whereConfig(string|array $name, mixed $value = null)
+ * @method \Illuminate\Database\Eloquent\Builder|static whereConfig(string|array $name, string $operator = null, $value = null, string $boolean = 'and')
+ * @method \Illuminate\Database\Eloquent\Builder|static orWhereConfig(string|array $name, string $operator = null, $value = null)
  */
 trait HasConfig
 {

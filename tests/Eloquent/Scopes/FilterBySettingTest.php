@@ -161,4 +161,31 @@ class FilterBySettingTest extends BaseTestCase
 
         static::assertCount(1, $users);
     }
+
+    public function test_accepts_where_with_operator_and_or(): void
+    {
+        $user = DummyModel::make()->forceFill([
+            'name' => 'john',
+            'email' => 'john@email.com',
+            'password' => '123456',
+        ]);
+
+        $user->saveQuietly();
+
+        $this->createSettingsForUser($user);
+
+        Metadata::query()->whereKey(1)->update([
+            'type' => Metadata::TYPE_INTEGER,
+        ]);
+
+        Setting::query()->whereKey(1)->update([
+            'value' => 2
+        ]);
+
+        static::assertCount(1, DummyModel::whereConfig('foo', '>', 1)->get());
+        static::assertCount(0, DummyModel::whereConfig('foo', '<', 1)->get());
+
+        static::assertCount(1, DummyModel::whereConfig('foo', '>', 1)->orWhereConfig('foo', '<', 0)->get());
+        static::assertCount(0, DummyModel::whereConfig('foo', '>', 2)->orWhereConfig('foo', '<', 0)->get());
+    }
 }

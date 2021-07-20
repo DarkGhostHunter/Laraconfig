@@ -31,6 +31,7 @@ class WhereConfig implements Scope
     public function extend(Builder $builder): void
     {
         $builder->macro('whereConfig', [static::class, 'whereConfig']);
+        $builder->macro('orWhereConfig', [static::class, 'orWhereConfig']);
     }
 
     /**
@@ -38,31 +39,64 @@ class WhereConfig implements Scope
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $builder
      * @param  string|array  $name
-     * @param  mixed|null  $value
+     * @param  string|null  $operator
+     * @param  null  $value
+     * @param  string  $boolean
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public static function whereConfig(Builder $builder, string|array $name, mixed $value = null): Builder
-    {
+    public static function whereConfig(
+        Builder $builder,
+        string|array $name,
+        string $operator = null,
+        $value = null,
+        string $boolean = 'and'
+    ): Builder {
         if (is_array($name)) {
             foreach ($name as $key => $item) {
-                static::whereConfig($builder, $key, $item);
+                if (is_array($item)) {
+                    static::whereConfig($builder, ...$item);
+                } else {
+                    static::whereConfig($builder, $key, $item);
+                }
             }
 
             return $builder;
         }
 
-        return $builder->whereHas('settings', static function (Builder $builder) use ($name, $value): void {
-            $builder
-                ->withoutGlobalScope(AddMetadata::class)
-                ->where(
-                    static function (Builder $builder) use ($name, $value): void {
-                        $builder
-                            ->where('value', $value)
-                            ->whereHas('metadata', static function (Builder $builder) use ($name): void {
-                                $builder->where('name', $name);
-                            });
+        return $builder->has(
+            relation: 'settings',
+            boolean: $boolean,
+            callback: static function (Builder $builder) use ($name, $operator, $value): void {
+                $builder
+                    ->withoutGlobalScope(AddMetadata::class)
+                    ->where(
+                        static function (Builder $builder) use ($name, $operator, $value): void {
+                            $builder
+                                ->where('value', $operator, $value)
+                                ->whereHas('metadata', static function (Builder $builder) use ($name): void {
+                                    $builder->where('name', $name);
+                                });
+                        });
             });
-        });
+    }
+
+    /**
+     * Filters the user by the config value.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param  string|array  $name
+     * @param  string|null  $operator
+     * @param  null  $value
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function orWhereConfig(
+        Builder $builder,
+        string|array $name,
+        string $operator = null,
+        $value = null,
+    ): Builder {
+        return static::whereConfig($builder, $name, $operator, $value, 'or');
     }
 }
