@@ -6,24 +6,12 @@ use DarkGhostHunter\Laraconfig\Facades\Setting;
 use DarkGhostHunter\Laraconfig\LaraconfigServiceProvider;
 use DarkGhostHunter\Laraconfig\Registrar\SettingRegistrar;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class ServiceProviderTest extends BaseTestCase
 {
-    /** @var \Illuminate\Support\Carbon */
-    static protected $now;
-
     /** @var \Illuminate\Filesystem\Filesystem */
     protected mixed $filesystem;
-
-    public static function setUpBeforeClass(): void
-    {
-        parent::setUpBeforeClass();
-
-        static::$now = Carbon::create(2020, 1, 1, 19, 30);
-
-        Carbon::setTestNow(static::$now);
-    }
 
     protected function setUp(): void
     {
@@ -72,30 +60,19 @@ class ServiceProviderTest extends BaseTestCase
             ]
         )->run();
 
-        static::assertFileEquals(
-            database_path('migrations/2020_01_01_193000_create_user_settings_table.php'),
-            __DIR__ . '/../database/migrations/00_00_00_000000_create_user_settings_table.php'
-        );
-
-        static::assertFileEquals(
-            database_path('migrations/2020_01_01_193000_create_user_settings_metadata_table.php'),
-            __DIR__ . '/../database/migrations/00_00_00_000000_create_user_settings_metadata_table.php'
+        static::assertTrue(
+            collect($this->filesystem->files($this->app->databasePath('migrations')))
+                ->contains(function (\SplFileInfo $file) {
+                    return Str::endsWith($file->getPathname(), '_create_user_settings_table.php')
+                        || Str::endsWith($file->getPathname(), '_create_user_settings_metadata_table.php');
+                })
         );
     }
 
     protected function tearDown(): void
     {
-        if ($this->filesystem->exists(base_path('config/laraconfig.php'))) {
-            $this->filesystem->delete(base_path('config/laraconfig.php'));
-        }
-
-        if ($this->filesystem->exists(database_path('00_00_00_000000_create_user_settings_metadata_table.php'))) {
-            $this->filesystem->delete(database_path('00_00_00_000000_create_user_settings_metadata_table.php'));
-        }
-
-        if ($this->filesystem->exists(database_path('00_00_00_000000_create_user_settings_metadata_table.php'))) {
-            $this->filesystem->delete(database_path('00_00_00_000000_create_user_settings_metadata_table.php'));
-        }
+        $this->filesystem->delete(base_path('config/laraconfig.php'));
+        $this->filesystem->cleanDirectory(database_path('migrations'));
 
         parent::tearDown();
     }
