@@ -7,6 +7,7 @@ use DarkGhostHunter\Laraconfig\LaraconfigServiceProvider;
 use DarkGhostHunter\Laraconfig\Registrar\SettingRegistrar;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
+use SplFileInfo;
 
 class ServiceProviderTest extends BaseTestCase
 {
@@ -60,12 +61,18 @@ class ServiceProviderTest extends BaseTestCase
             ]
         )->run();
 
-        static::assertTrue(
-            collect($this->filesystem->files($this->app->databasePath('migrations')))
-                ->contains(function (\SplFileInfo $file) {
-                    return Str::endsWith($file->getPathname(), '_create_user_settings_table.php')
-                        || Str::endsWith($file->getPathname(), '_create_user_settings_metadata_table.php');
-                })
+        $files = collect($this->filesystem->files($this->app->databasePath('migrations')));
+
+        static::assertTrue($files->contains(
+            static function (SplFileInfo $file): bool {
+                return preg_match('/.+\d{4}_\d{2}_\d{2}_\d{6}_(create_user_settings_table.php)$/', $file->getPathname());
+            })
+        );
+
+        static::assertTrue($files->contains(
+            static function (SplFileInfo $file): bool {
+                return preg_match('/.+\d{4}_\d{2}_\d{2}_\d{6}_(create_user_settings_metadata_table.php)$/', $file->getPathname());
+            })
         );
     }
 
