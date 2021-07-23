@@ -62,6 +62,7 @@ class PublishCommand extends Command
         if ($this->filesystem->exists($path)) {
             $this->filesystem->replace(static::STUB_PATH, $path);
         } else {
+            $this->filesystem->ensureDirectoryExists(base_path('settings'));
             $this->filesystem->copy(static::STUB_PATH, $path);
         }
     }
