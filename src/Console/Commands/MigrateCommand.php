@@ -5,6 +5,7 @@ namespace DarkGhostHunter\Laraconfig\Console\Commands;
 use DarkGhostHunter\Laraconfig\Migrator\Data;
 use DarkGhostHunter\Laraconfig\Migrator\Migrator;
 use Illuminate\Console\Command;
+use Illuminate\Console\OutputStyle;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 
@@ -50,6 +51,7 @@ class MigrateCommand extends Command
     {
         // We will use the Input interface to use the same instance.
         $this->getLaravel()->instance(InputInterface::class, $this->input);
+        $this->getLaravel()->instance(OutputStyle::class, $this->output);
 
         try {
             $this->migrator->send($this->data)->thenReturn();

@@ -29,8 +29,6 @@ class PublishCommandTest extends BaseTestCase
         parent::setUp();
 
         $this->filesystem = new Filesystem();
-
-        $this->filesystem->ensureDirectoryExists(base_path('settings'));
     }
 
     public function test_adds_sample_file_into_settings(): void
@@ -44,6 +42,7 @@ class PublishCommandTest extends BaseTestCase
 
     public function test_confirms_manifest_replace(): void
     {
+        $this->filesystem->ensureDirectoryExists($this->app->basePath('settings'));
         $this->filesystem->put($this->app->basePath('settings/users.php'), '');
 
         $this->artisan('settings:publish')
@@ -59,6 +58,7 @@ class PublishCommandTest extends BaseTestCase
 
     public function test_replaces_manifest_once_confirmed(): void
     {
+        $this->filesystem->ensureDirectoryExists($this->app->basePath('settings'));
         $this->filesystem->put($this->app->basePath('settings/users.php'), '');
 
         $this->artisan('settings:publish')
@@ -75,11 +75,7 @@ class PublishCommandTest extends BaseTestCase
 
     public function tearDown(): void
     {
-        $filesystem = new Filesystem();
-
-        if ($filesystem->exists($this->app->basePath('settings/users.php'))) {
-            $filesystem->delete($this->app->basePath('settings/users.php'));
-        }
+        $this->filesystem->deleteDirectory($this->app->basePath('settings'));
 
         parent::tearDown();
     }
