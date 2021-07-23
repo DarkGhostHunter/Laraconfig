@@ -37,7 +37,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "LaraconfigServiceProvider"
+        "DarkGhostHunter\\Laraconfig\\LaraconfigServiceProvider"
       ],
       "aliases": {
         "Setting": "DarkGhostHunter\\Laraconfig\\Facades\\Setting"
