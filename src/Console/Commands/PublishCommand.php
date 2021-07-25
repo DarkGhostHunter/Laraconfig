@@ -59,11 +59,7 @@ class PublishCommand extends Command
      */
     protected function putFile(string $path): void
     {
-        if ($this->filesystem->exists($path)) {
-            $this->filesystem->replace(static::STUB_PATH, $path);
-        } else {
-            $this->filesystem->ensureDirectoryExists(base_path('settings'));
-            $this->filesystem->copy(static::STUB_PATH, $path);
-        }
+        $this->filesystem->ensureDirectoryExists($this->laravel->basePath('settings'));
+        $this->filesystem->copy(static::STUB_PATH, $path);
     }
 }

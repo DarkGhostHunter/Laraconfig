@@ -67,7 +67,10 @@ class PublishCommandTest extends BaseTestCase
             ->assertExitCode(0);
 
         static::assertFileExists($this->app->basePath('settings/users.php'));
-        static::assertStringEqualsFile(
+
+        sleep(10);
+
+        static::assertFileEquals(
             __DIR__ . '/../../../stubs/users.php',
             $this->app->basePath('settings/users.php')
         );
