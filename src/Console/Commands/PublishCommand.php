@@ -47,19 +47,10 @@ class PublishCommand extends Command
 
         // Add the manifest if it doesn't exists, or if the user confirms the replace.
         if ($this->filesystem->missing($path) || $this->confirm('A manifest file already exists. Overwrite?')) {
-            $this->putFile($path);
+            $this->filesystem->ensureDirectoryExists($this->laravel->basePath('settings'));
+            $this->filesystem->copy(static::STUB_PATH, $path);
+
             $this->info("Manifest published. Check it at: $path");
         }
-    }
-
-    /**
-     * Puts the stub into the application directory.
-     *
-     * @param  string  $path
-     */
-    protected function putFile(string $path): void
-    {
-        $this->filesystem->ensureDirectoryExists($this->laravel->basePath('settings'));
-        $this->filesystem->copy(static::STUB_PATH, $path);
     }
 }
