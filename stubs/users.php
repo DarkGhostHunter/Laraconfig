@@ -1,1 +1,5 @@
-S:\Composer\Laravel\Laraset\vendor\orchestra\testbench-core\laravel\settings/users.php
+<?php
+
+use DarkGhostHunter\Laraconfig\Facades\Setting;
+
+Setting::name('dark_mode')->boolean();
