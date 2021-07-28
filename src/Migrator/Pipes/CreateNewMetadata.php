@@ -10,6 +10,7 @@ use DarkGhostHunter\Laraconfig\Registrar\Declaration;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @internal
@@ -145,13 +146,14 @@ class CreateNewMetadata
         foreach ($models as $model) {
             $affected += Setting::query()->insertUsing(
                 ['metadata_id', 'settable_id', 'settable_type', 'value', 'created_at', 'updated_at'],
-                $model->newQuery()->select([
-                    $metadata->getKey(). ' as metadata_id',
-                    $model->getKeyName(). ' as settable_id',
-                    $model->getMorphClass(). ' as settable_type',
-                    $metadata->getRawOriginal('default', 'NULL').' as value',
-                    $this->now->toDateTimeString(). ' as created_at',
-                    $this->now->toDateTimeString(). ' as updated_at',
+                $model->newQuery()
+                    ->select([
+                    DB::raw("'{$metadata->getKey()}' as metadata_id"),
+                    DB::raw("{$model->getKeyName()} as settable_id"),
+                    DB::raw("'{$model->getMorphClass()}' as settable_type"),
+                    DB::raw("'{$metadata->getRawOriginal('default', 'NULL')}' as value"),
+                    DB::raw("'{$this->now->toDateTimeString()}' as created_at"),
+                    DB::raw("'{$this->now->toDateTimeString()}' as updated_at"),
                 ])->getQuery()
             );
         }
@@ -175,12 +177,12 @@ class CreateNewMetadata
             ['metadata_id', 'settable_id', 'settable_type', 'value', 'created_at', 'updated_at'],
             Setting::query()->where('metadata_id', $old->getKey())
                 ->select([
-                    $new->getKey(). ' as metadata_id',
+                    DB::raw("'{$new->getKey()}' as metadata_id"),
                     'settable_id',
                     'settable_type',
                     'value', // Here we will just instruct to copy the value raw to the new setting.
-                    $this->now->toDateTimeString(). ' as created_at',
-                    $this->now->toDateTimeString(). ' as updated_at',
+                    DB::raw("'{$this->now->toDateTimeString()}' as created_at"),
+                    DB::raw("'{$this->now->toDateTimeString()}' as updated_at"),
                 ])->getQuery()
         );
     }

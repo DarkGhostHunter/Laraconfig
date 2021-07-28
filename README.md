@@ -427,22 +427,7 @@ Laraconfig uses one single bag called `default`. If you have declared in the man
 
 ```php
 // app/Models/User.php
-
-/**
- * Returns the bags this model uses for settings.
- *
- * @return array|string
- */
-public function getSettingsBags(): array|string
-{
-    $bags = ['notifications'];
-    
-    if ($this->is_premium) {
-        $bags[] = 'theme';
-    }
-    
-    return $bags;
-}
+i
 ```
 
 The above will apply a filter to the query when retrieving settings from the database. This makes easy to swap bags when a user has a different role or property, or programmatically.
