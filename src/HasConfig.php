@@ -49,6 +49,21 @@ trait HasConfig
                 }
             }
         );
+        
+        static::retrieved(
+            static function (Model $model): void {
+                // Initialise when loading models created prior to implementing laraconfig
+                if (
+                    (!method_exists($model, 'shouldInitializeConfig') || $model->shouldInitializeConfig()) &&
+                    !$model->settings()->isInitialized()
+                ) {
+                    // Initialise the settings
+                    $model->settings()->initialize();
+                    // Unset loaded settings relationship to force Eloquent to refresh the bag
+                    unset($model->settings);
+                }
+            }
+        );
 
         static::deleting(
             static function (Model $model): void {
