@@ -27,6 +27,10 @@ Since Laraconfig uses the Eloquent ORM behind the scenes, getting a one or all s
 
 ## Quickstart
 
+You can install the package via composer.
+
+    composer require darkghosthunter/laraconfig
+
 First, publish and run the migrations. These will add two tables called `user_settings` and `user_settings_metadata`. One holds the values per user, the other the metadata of the setting, respectively.
 
     php artisan vendor:publish --provider="DarkGhostHunter\Laraconfig\LaraconfigServiceProvider" --tag="migrations"
