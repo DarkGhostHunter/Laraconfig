@@ -86,6 +86,7 @@ class FindModelsWithSettings
                 ->ltrim('app\\')
                 ->rtrim('.php')
                 ->replace(DIRECTORY_SEPARATOR, '\\')
+                ->ltrim('\\')
                 ->start('\\'.$namespace);
 
             try {
