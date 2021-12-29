@@ -91,7 +91,7 @@ class SettingsCollection extends Collection
      *
      * @return void
      */
-    public function set(string|array $name, mixed $value, bool $force = true): void
+    public function set(string|array $name, mixed $value = null, bool $force = true): void
     {
         // If the name is not an array, we will make it one to iterate over.
         if (is_string($name)) {
