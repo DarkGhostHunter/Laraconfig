@@ -84,10 +84,10 @@ class FindModelsWithSettings
                 ->trim('\\')
                 ->trim('/')
                 ->ltrim('app\\')
-                ->rtrim('.php')
+                ->replace('.php', '')
                 ->replace(DIRECTORY_SEPARATOR, '\\')
-                ->ltrim('\\')
-                ->start('\\'.$namespace);
+                ->start('\\'.$namespace)
+                ->replace('\\\\', '\\');
 
             try {
                 $reflection = new ReflectionClass($className);
