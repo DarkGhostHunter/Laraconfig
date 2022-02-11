@@ -285,10 +285,10 @@ Since the user in the example above won't be initialized, we have to do it manua
 
 ```php
 // Initialize if not initialized before.
-$user->config()->initialize();
+$user->settings()->initialize();
 
 // Forcefully initialize, even if already initialized.
-$user->config()->initialize(true);
+$user->settings()->initialize(true);
 ```
 
 #### Checking settings initialization
@@ -296,7 +296,7 @@ $user->config()->initialize(true);
 You can check if a user configuration has been initialized or not using `isInitialized()`.
 
 ```php
-if ($user->config()->isInitialized()) {
+if ($user->settings()->isInitialized()) {
     return 'You have a config!';
 }
 ```
