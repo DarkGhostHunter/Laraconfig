@@ -1,6 +1,8 @@
 This package has been archived.
 
-Sorry guys and gals, I bit more than I can chew and I'm currently not using this package to justify its support it.
+Sorry guys and gals, I bit more than I can chew and I'm currently not using this package to justify its support.
+
+I may revisit this in the near future.
 
 ---
 
