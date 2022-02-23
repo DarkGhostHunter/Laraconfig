@@ -17,7 +17,7 @@
     "illuminate/collections": "^9.2",
     "illuminate/config": "^9.2",
     "illuminate/cache": "^9.2",
-    "symfony/console": "^5.3"
+    "symfony/console": "^6.0.3"
   },
   "require-dev": {
     "mockery/mockery": "^1.4.3",
