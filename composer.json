@@ -13,7 +13,7 @@
   "require": {
     "php": ">=8.0",
     "illuminate/database": "^8.43",
-    "illuminate/support": "^8.43",
+    "illuminate/support": "^9.2",
     "illuminate/collections": "^8.43",
     "illuminate/config": "^8.43",
     "illuminate/cache": "^8.43",
