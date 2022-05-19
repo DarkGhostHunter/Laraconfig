@@ -1,3 +1,9 @@
+This package has been archived.
+
+Sorry guys and gals, I bit more than I can chew and I'm currently not using this package to justify its support.
+
+I may revisit this in the near future.
+
 ---
 
 ![Xavier von Erlach - Unsplash #ooR1jY2yFr4](https://images.unsplash.com/photo-1570221622224-3bb8f08f166c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&h=400&q=80)
