@@ -1,3 +1,5 @@
+---
+
 ![Xavier von Erlach - Unsplash #ooR1jY2yFr4](https://images.unsplash.com/photo-1570221622224-3bb8f08f166c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&h=400&q=80)
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/darkghosthunter/laraconfig.svg)](https://packagist.org/packages/darkghosthunter/laraconfig) [![License](https://poser.pugx.org/darkghosthunter/laraconfig/license)](https://packagist.org/packages/darkghosthunter/laraconfig) ![](https://img.shields.io/packagist/php-v/darkghosthunter/laraconfig.svg) ![](https://github.com/DarkGhostHunter/Laraconfig/workflows/PHP%20Composer/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/DarkGhostHunter/Laraconfig/badge.svg?branch=master)](https://coveralls.io/github/DarkGhostHunter/Laraconfig?branch=master) [![Laravel Octane Compatible](https://img.shields.io/badge/Laravel%20Octane-Compatible-success?style=flat&logo=laravel)](https://github.com/laravel/octane)
@@ -285,10 +287,10 @@ Since the user in the example above won't be initialized, we have to do it manua
 
 ```php
 // Initialize if not initialized before.
-$user->config()->initialize();
+$user->settings()->initialize();
 
 // Forcefully initialize, even if already initialized.
-$user->config()->initialize(true);
+$user->settings()->initialize(true);
 ```
 
 #### Checking settings initialization
@@ -296,7 +298,7 @@ $user->config()->initialize(true);
 You can check if a user configuration has been initialized or not using `isInitialized()`.
 
 ```php
-if ($user->config()->isInitialized()) {
+if ($user->settings()->isInitialized()) {
     return 'You have a config!';
 }
 ```

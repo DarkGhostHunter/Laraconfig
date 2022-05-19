@@ -80,14 +80,14 @@ class FindModelsWithSettings
 
         foreach ($files as $file) {
             $className = (string) Str::of($file->getPathname())
-            ->after($this->app->basePath())
-            ->trim('\\')
-            ->trim('/')
-            ->ltrim('app\\')
-            ->replace('.php', '')
-            ->replace(DIRECTORY_SEPARATOR, '\\')
-            ->start('\\' . $namespace)
-            ->replace('\\\\', '\\');
+                ->after($this->app->basePath())
+                ->trim('\\')
+                ->trim('/')
+                ->ltrim('app\\')
+                ->replace('.php', '')
+                ->replace(DIRECTORY_SEPARATOR, '\\')
+                ->start('\\'.$namespace)
+                ->replace('\\\\', '\\');
 
             try {
                 $reflection = new ReflectionClass($className);
